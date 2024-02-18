@@ -129,6 +129,7 @@ jobs:
           mkdir apks
           find artifacts -name "*.apk" -exec cp {} apks \;
           find artifacts -name "*.sha256sum.txt" -exec cp {} apks \;
+          find artifacts -name "*.so" -exec cp {} apks \;
           ./ghr -delete -prerelease -t "${{ github.token }}" -n "${{ github.event.inputs.tag }}" "${{ github.event.inputs.tag }}" apks
   upload:
     name: Upload Release

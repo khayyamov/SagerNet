@@ -46,17 +46,11 @@ jobs:
           ./run init action naive
           ./run plugin naive init
           ./run plugin naive ${{ matrix.arch }}
-
-  release:
-    name: Release
-    needs: native
-    runs-on: ubuntu-latest
-    steps:
-      - name: Zip JNI Libraries
-        run: zip -r naive_so_files.zip plugin/naive/src/main/jniLibs
-
-      - name: Upload Release Artifact
-        uses: actions/upload-artifact@v2
+          zip -r ${{ matrix.arch }}.zip plugin/mieru/src/main/jniLibs/${{ matrix.arch }}
+      - name: Upload Artifact
+        uses: svenstaro/upload-release-action@v2
         with:
-          name: naive_so_files
-          path: naive_so_files.zip
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ matrix.arch }}.zip
+          tag: ${{ github.ref }}
+          file_glob: true

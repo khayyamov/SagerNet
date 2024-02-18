@@ -1,10 +1,7 @@
 name: Mieru Plugin Release Build
+
 on:
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Release Tag'
-        required: true
+  push:
 jobs:
   check:
     name: Check Access
@@ -45,11 +42,11 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           ./run plugin mieru
-          zip -r soFiles.zip plugin/mieru/src/main/jniLibs
+          zip -r mieru_so_files.zip plugin/mieru/src/main/jniLibs
       - name: Upload Artifact
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: soFiles.zip
+          file: mieru_so_files.zip
           tag: ${{ github.ref }}
           file_glob: true

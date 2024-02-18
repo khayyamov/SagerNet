@@ -45,9 +45,43 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           ./run plugin mieru
-          wget -O ghr.tar.gz https://github.com/tcnksm/ghr/releases/download/v0.13.0/ghr_v0.13.0_linux_amd64.tar.gz
-          tar -xvf ghr.tar.gz
-          mv ghr*linux_amd64/ghr .
-          mkdir apks
-          find artifacts -name "*.so" -exec cp {} apks \;
-          ./ghr -delete -prerelease -t "${{ github.token }}" -n "${{ github.event.inputs.tag }}" "${{ github.event.inputs.tag }}" apks
+          zip -r soFiles.zip plugin/mieru/src/main/jniLibs
+          echo "::set-output name=zip-path::soFiles.zip"
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: jniLibs
+          path: ${{ steps.native.outputs.zip-path }}
+
+  release:
+    name: Create Release
+    needs: native
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: jniLibs
+          path: /tmp/jniLibs
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.tag }}
+          release_name: Release ${{ github.event.inputs.tag }}
+          body: |
+            Release ${{ github.event.inputs.tag }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /tmp/jniLibs/soFiles.zip
+          asset_name: soFiles.zip
+          asset_content_type: application/zip

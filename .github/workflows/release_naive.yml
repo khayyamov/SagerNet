@@ -46,11 +46,17 @@ jobs:
           ./run init action naive
           ./run plugin naive init
           ./run plugin naive ${{ matrix.arch }}
-          zip -r navie_so_files.zip plugin/naive/src/main/jniLibs
-      - name: Upload Artifact
+
+  publish:
+    runs-on: ubuntu-latest
+    name: Upload Artifact
+    steps:
+      - name: Uploading
         uses: svenstaro/upload-release-action@v2
+        run: |
+          zip -r naive_so_files.zip plugin/naive/src/main/jniLibs
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: navie_so_files.zip
+          file: naive_so_files.zip
           tag: ${{ github.ref }}
           file_glob: true

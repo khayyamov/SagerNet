@@ -51,10 +51,17 @@ jobs:
     runs-on: ubuntu-latest
     name: Upload Artifact
     steps:
-      - name: Uploading
+      - name: Create ZIP file
+        run: zip -r naive_so_files.zip plugin/naive/src/main/jniLibs
+        # Optionally, you can store the created artifact as a workflow artifact
+        # So that it can be used in later steps or manually downloaded from the GitHub UI
+        # - uses: actions/upload-artifact@v2
+        #   with:
+        #     name: naive_so_files
+        #     path: naive_so_files.zip
+
+      - name: Upload Artifact
         uses: svenstaro/upload-release-action@v2
-        run: |
-          zip -r naive_so_files.zip plugin/naive/src/main/jniLibs
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: naive_so_files.zip

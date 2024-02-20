@@ -46,8 +46,9 @@ jobs:
           ./run init action naive
           ./run plugin naive init
           ./run plugin naive ${{ matrix.arch }}
-          zip -r ${{ matrix.arch }}.zip plugin/mieru/src/main/jniLibs/${{ matrix.arch }}
       - name: Upload Artifact
+        run: |
+          zip -r ${{ matrix.arch }}.zip plugin/naive/src/main/jniLibs/${{ matrix.arch }}
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}

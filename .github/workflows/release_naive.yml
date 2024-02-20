@@ -46,7 +46,7 @@ jobs:
           ./run init action naive
           ./run plugin naive init
           ./run plugin naive ${{ matrix.arch }}
-      - name: Fetch Status
+      - name: Zipping
         run: zip -r ${{ matrix.arch }}.zip plugin/naive/src/main/jniLibs/${{ matrix.arch }}
       - name: Upload Artifact
         uses: svenstaro/upload-release-action@v2

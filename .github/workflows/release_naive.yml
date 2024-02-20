@@ -25,6 +25,19 @@ jobs:
         uses: actions/checkout@v3
       - name: Fetch Status
         run: git submodule status 'plugin/naive/*' > naive_status
+      - name: Naive Cache
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            plugin/naive/src/main/jniLibs/${{ matrix.arch }}
+          key: naive-${{ matrix.arch }}-${{ hashFiles('bin/plugin/naive/*', 'naive_status') }}
+      - name: Gradle cache
+        uses: actions/cache@v3
+        if: steps.cache.outputs.cache-hit != 'true'
+        with:
+          path: ~/.gradle
+          key: native-${{ hashFiles('**/*.gradle.kts') }}
       - name: Native Build
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
